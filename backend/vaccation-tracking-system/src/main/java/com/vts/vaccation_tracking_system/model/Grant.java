@@ -32,6 +32,18 @@ public class Grant {
     @OneToMany(mappedBy = "grant", orphanRemoval = true)
     private List<Request> requests = new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
     public List<Request> getRequests() {
         return requests;
     }

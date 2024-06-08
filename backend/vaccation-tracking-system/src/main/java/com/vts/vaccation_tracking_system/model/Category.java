@@ -1,11 +1,13 @@
 package com.vts.vaccation_tracking_system.model;
 
-import com.vts.vaccation_tracking_system.model.bussinessLogicModel.ValidationResult;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
-@Table(name = "restriction")
-public abstract class Restriction {
+@Table(name = "category")
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -14,22 +16,18 @@ public abstract class Restriction {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "hours", nullable = false)
-    private Integer hours;
-
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 500)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "grant_id")
-    private Grant grant;
+    @OneToMany(mappedBy = "category", orphanRemoval = true)
+    private List<Grant> grants = new ArrayList<>();
 
-    public Grant getGrant() {
-        return grant;
+    public List<Grant> getGrants() {
+        return grants;
     }
 
-    public void setGrant(Grant grant) {
-        this.grant = grant;
+    public void setGrants(List<Grant> grants) {
+        this.grants = grants;
     }
 
     public String getDescription() {
@@ -38,14 +36,6 @@ public abstract class Restriction {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Integer getHours() {
-        return hours;
-    }
-
-    public void setHours(Integer hours) {
-        this.hours = hours;
     }
 
     public String getName() {
@@ -63,7 +53,5 @@ public abstract class Restriction {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public abstract ValidationResult validate(Request request);
 
 }

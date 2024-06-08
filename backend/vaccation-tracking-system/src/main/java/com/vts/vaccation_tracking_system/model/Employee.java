@@ -3,9 +3,7 @@ package com.vts.vaccation_tracking_system.model;
 import jakarta.persistence.*;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "employee")
@@ -29,6 +27,29 @@ public class Employee implements HelpfulInterface{
 
     @ManyToMany(mappedBy = "employees")
     private Set<Manager> managers = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Request> requests = new ArrayList<>();
+
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "location_id", nullable = false)
+    private Location location;
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public List<Request> getRequests() {
+        return requests;
+    }
+
+    public void setRequests(List<Request> requests) {
+        this.requests = requests;
+    }
 
     public Set<Manager> getManagers() {
         return managers;
