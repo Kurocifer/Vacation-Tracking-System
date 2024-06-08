@@ -30,6 +30,18 @@ public class Request {
     @JoinColumn(name = "grant_id")
     private Grant grant;
 
+    @ManyToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
     public Grant getGrant() {
         return grant;
     }
