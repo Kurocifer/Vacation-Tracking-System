@@ -7,11 +7,23 @@ import java.util.List;
 import java.util.stream.Collector;
 
 public class ValidationResult {
-    public boolean validated() {
-        return true;
+
+    private boolean isValidated = false;
+    private List<String> errorMessages = new ArrayList<>();
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
     }
 
-    public List getErrors() {
-        return new ArrayList();
+    public void setErrorMessages(List<String> errorMessages) {
+        this.errorMessages = errorMessages;
+    }
+
+    public boolean validated() {
+        return isValidated;
+    }
+
+    public List<String> getErrors() {
+        return errorMessages;
     }
 }

@@ -16,17 +16,6 @@ public class Location {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "location", orphanRemoval = true)
-    private List<Employee> employees = new ArrayList<>();
-
-    public List<Employee> getEmployees() {
-        return employees;
-    }
-
-    public void setEmployees(List<Employee> employees) {
-        this.employees = employees;
-    }
-
     public String getName() {
         return name;
     }

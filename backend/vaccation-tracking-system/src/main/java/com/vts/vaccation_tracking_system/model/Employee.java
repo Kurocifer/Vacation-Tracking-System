@@ -7,11 +7,14 @@ import java.util.*;
 
 @Entity
 @Table(name = "employee")
-public class Employee implements HelpfulInterface{
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -19,28 +22,31 @@ public class Employee implements HelpfulInterface{
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String username;
-
-    @Column(name = "password", nullable = false, length = 1024)
+    @Column(name = "password", nullable = false, unique = true, length = 1024)
     private String password;
 
-    @ManyToMany(mappedBy = "employees")
-    private Set<Manager> managers = new LinkedHashSet<>();
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Grant> grants = new ArrayList<>();
 
     @OneToMany(mappedBy = "employee", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Request> requests = new ArrayList<>();
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "location_id", nullable = false)
-    private Location location;
+    @ManyToMany(mappedBy = "employees")
+    private Set<Manager> managers = new LinkedHashSet<>();
 
-    public Location getLocation() {
-        return location;
+    public Set<Manager> getManagers() {
+        return managers;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setManagers(Set<Manager> managers) {
+        this.managers = managers;
     }
 
     public List<Request> getRequests() {
@@ -51,12 +57,28 @@ public class Employee implements HelpfulInterface{
         this.requests = requests;
     }
 
-    public Set<Manager> getManagers() {
-        return managers;
+    public List<Grant> getGrants() {
+        return grants;
     }
 
-    public void setManagers(Set<Manager> managers) {
-        this.managers = managers;
+    public void setGrants(List<Grant> grants) {
+        this.grants = grants;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getPassword() {
@@ -65,14 +87,6 @@ public class Employee implements HelpfulInterface{
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getLastName() {
@@ -89,6 +103,14 @@ public class Employee implements HelpfulInterface{
 
     public void setFirstName(String firstName) {
         this.firstName = firstName;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public Long getId() {
