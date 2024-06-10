@@ -1,3 +1,4 @@
+// Vacation time of type X cannot be taken when directly adjacent to a com-//pany or location-specific holiday.
 package com.vts.vaccation_tracking_system.model.bussinessLogicModel;
 
 import com.vts.vaccation_tracking_system.model.Request;
@@ -12,9 +13,14 @@ public class AdjacentDayRestriction extends Restriction {
     public ValidationResult validate(Request request) {
         ValidationResult validationResult = new ValidationResult();
 
-        validationResult.setValidated(false);
+        validationResult.setValidated(checkForLegibility());
         validationResult.setErrorMessages(errorMessages);
 
         return validationResult;
+    }
+
+    boolean checkForLegibility() {
+        // checks how legit employee is to take the requested vacation time based on this.
+        return false;
     }
 }

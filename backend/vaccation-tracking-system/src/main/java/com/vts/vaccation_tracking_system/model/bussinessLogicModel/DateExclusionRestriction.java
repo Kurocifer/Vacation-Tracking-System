@@ -1,3 +1,4 @@
+// Vacation time may not be granted on these dates: X
 package com.vts.vaccation_tracking_system.model.bussinessLogicModel;
 
 import com.vts.vaccation_tracking_system.model.Request;
