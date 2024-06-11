@@ -126,4 +126,19 @@ public class Manager implements HelpfulInterface {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "Manager{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", location=" + location +
+                ", grants=" + grants +
+                ", requests=" + requests +
+                ", employees=" + employees +
+                '}';
+    }
 }

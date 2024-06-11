@@ -28,7 +28,7 @@ public class Employee implements HelpfulInterface {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "location_id")
     private Location location;
 
@@ -135,5 +135,21 @@ public class Employee implements HelpfulInterface {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", location=" + location +
+                ", grants=" + grants +
+                ", requests=" + requests +
+                ", managers=" + managers +
+                '}';
     }
 }

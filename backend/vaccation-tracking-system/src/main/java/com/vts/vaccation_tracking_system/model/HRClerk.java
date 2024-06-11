@@ -73,4 +73,15 @@ public class HRClerk {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "HRClerk{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                '}';
+    }
 }
