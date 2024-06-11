@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "manager")
-public class Manager {
+public class Manager implements HelpfulInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
