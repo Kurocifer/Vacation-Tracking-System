@@ -30,8 +30,8 @@ public class Manager implements HelpfulInterface {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @OneToOne(cascade = CascadeType.ALL, optional = false, orphanRemoval = true)
-    @JoinColumn(name = "location_id", nullable = false)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "location_id")
     private Location location;
 
     @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE, orphanRemoval = true)

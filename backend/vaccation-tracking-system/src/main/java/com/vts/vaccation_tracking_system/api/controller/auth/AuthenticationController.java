@@ -2,7 +2,9 @@ package com.vts.vaccation_tracking_system.api.controller.auth;
 
 import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
+import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,12 +23,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody RegistrationBody registrationBody) {
+    public ResponseEntity registerUser(@Valid @RequestBody RegistrationBody registrationBody) {
         try {
             userService.registerUser(registrationBody);
             return ResponseEntity.ok().build();
         } catch (InvalidUserRoleException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (UserAlreadyExistsException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
     }

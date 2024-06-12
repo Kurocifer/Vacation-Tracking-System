@@ -3,7 +3,7 @@ package com.vts.vaccation_tracking_system.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "hr_cleark")
+@Table(name = "hr_clerk")
 public class HRClerk {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
