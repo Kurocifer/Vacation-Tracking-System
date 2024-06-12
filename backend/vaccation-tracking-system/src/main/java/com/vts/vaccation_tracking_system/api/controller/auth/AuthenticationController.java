@@ -1,5 +1,7 @@
 package com.vts.vaccation_tracking_system.api.controller.auth;
 
+import com.vts.vaccation_tracking_system.api.model.LoginBody;
+import com.vts.vaccation_tracking_system.api.model.LoginResponse;
 import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
@@ -7,10 +9,7 @@ import com.vts.vaccation_tracking_system.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -33,5 +32,21 @@ public class AuthenticationController {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
 
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginBody loginBody) {
+        String jwt = null;
+        try {
+            jwt = userService.loginUser(loginBody);
+        } catch (InvalidUserRoleException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        if(jwt == null)
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setJwt(jwt);
+        return ResponseEntity.ok(loginResponse);
     }
 }

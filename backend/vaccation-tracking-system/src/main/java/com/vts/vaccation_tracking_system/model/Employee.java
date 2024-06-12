@@ -7,7 +7,7 @@ import java.util.*;
 
 @Entity
 @Table(name = "employee")
-public class Employee implements HelpfulInterface {
+public class Employee extends AbstractUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

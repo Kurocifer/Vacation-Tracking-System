@@ -1,5 +1,6 @@
 package com.vts.vaccation_tracking_system.service;
 
+import com.vts.vaccation_tracking_system.api.model.LoginBody;
 import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
@@ -12,6 +13,7 @@ import com.vts.vaccation_tracking_system.model.dao.ManagerDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -20,16 +22,18 @@ public class UserService {
     private ManagerDAO managerDAO;
     private ClerkDAO clerkDAO;
     private EncryptionService encryptionService;
-
-    public UserService(EmployeeDAO employeeDAO, ManagerDAO managerDAO, ClerkDAO clerkDAO, EncryptionService encryptionService) {
+    private JWTService jwtService;
+    public UserService(EmployeeDAO employeeDAO, ManagerDAO managerDAO, ClerkDAO clerkDAO, EncryptionService encryptionService, JWTService jwtService) {
         this.employeeDAO = employeeDAO;
         this.managerDAO = managerDAO;
         this.clerkDAO = clerkDAO;
         this.encryptionService = encryptionService;
+        this.jwtService = jwtService;
     }
 
 
     public void registerUser(RegistrationBody registrationBody) throws InvalidUserRoleException, UserAlreadyExistsException {
+
 
         switch (registrationBody.getUserRole().toUpperCase()) {
             case "EMPLOYEE":
@@ -47,6 +51,31 @@ public class UserService {
             default:
                 throw new InvalidUserRoleException();
         }
+    }
+
+    public String loginUser(LoginBody loginBody) throws InvalidUserRoleException {
+        return switch (loginBody.getUserRole().toUpperCase()) {
+            case "EMPLOYEE" -> loginEmployee(loginBody);
+            case "MANAGER" -> loginManager(loginBody);
+            case "CLERK" -> loginClerk(loginBody);
+            default -> throw new InvalidUserRoleException();
+        };
+    }
+
+    private String generateUsername(String firstName, String lastName, String role, int lastNameLetters) {
+        if(firstName == null || lastName == null || lastNameLetters < 0 || lastNameLetters > lastName.length()) {
+            throw new IllegalArgumentException("Invalid input parameters");
+        }
+
+        String rolePortion = role.substring(0, 3);
+
+        String lastNamePortion = lastName.substring(0, Math.min(lastNameLetters, lastName.length()));
+
+        Long currentTime = (System.currentTimeMillis() / 1000) % 1000;
+
+        int year = (Calendar.getInstance().get(Calendar.YEAR) - 1900) % 100; // get current year (year since 1900), and module by 100 to get two las digits
+
+        return String.format("%s%s%s%d%02d", rolePortion, firstName, lastNamePortion, currentTime, year).toUpperCase();
     }
 
     private void registerEmployee(RegistrationBody registrationBody) throws UserAlreadyExistsException {
@@ -112,21 +141,48 @@ public class UserService {
         clerkDAO.save(clerk);
     }
 
+    private String loginEmployee(LoginBody loginBody) {
+        System.out.println(loginBody.getUserRole());
+        Optional<Employee> opEmployee = employeeDAO.findByUsernameIgnoreCase(loginBody.getUsername());
 
-
-    private String generateUsername(String firstName, String lastName, String role, int lastNameLetters) {
-        if(firstName == null || lastName == null || lastNameLetters < 0 || lastNameLetters > lastName.length()) {
-            throw new IllegalArgumentException("Invalid input parameters");
+        if(opEmployee.isPresent()) {
+            Employee employee = opEmployee.get();
+            if(encryptionService.checkPassword(loginBody.getPassword(), employee.getPassword())) {
+                return jwtService.generateJWT(employee);
+            }
         }
 
-        String rolePortion = role.substring(0, 3);
-
-        String lastNamePortion = lastName.substring(0, Math.min(lastNameLetters, lastName.length()));
-
-        Long currentTime = (System.currentTimeMillis() / 1000) % 1000;
-
-        int year = (Calendar.getInstance().get(Calendar.YEAR) - 1900) % 100; // get current year (year since 1900), and module by 100 to get two las digits
-
-        return String.format("%s%s%s%d%02d", rolePortion, firstName, lastNamePortion, currentTime, year).toUpperCase();
+        return null;
     }
+
+    private String loginManager(LoginBody loginBody) {
+        System.out.println(loginBody.getUserRole());
+
+        Optional<Manager> opManger = managerDAO.findByUsernameIgnoreCase(loginBody.getUsername());
+
+        if(opManger.isPresent()) {
+            Manager manager = opManger.get();
+            if(encryptionService.checkPassword(loginBody.getPassword(), manager.getPassword())) {
+                return jwtService.generateJWT(manager);
+            }
+        }
+
+        return null;
+    }
+
+    private String loginClerk(LoginBody loginBody) {
+        System.out.println(loginBody.getUserRole());
+
+        Optional<HRClerk> opClerk = clerkDAO.findByUsernameIgnoreCase(loginBody.getUsername());
+
+        if(opClerk.isPresent()) {
+            HRClerk clerk = opClerk.get();
+            if(encryptionService.checkPassword(loginBody.getPassword(), clerk.getPassword())) {
+                return jwtService.generateJWT(clerk);
+            }
+        }
+
+        return null;
+    }
+
 }

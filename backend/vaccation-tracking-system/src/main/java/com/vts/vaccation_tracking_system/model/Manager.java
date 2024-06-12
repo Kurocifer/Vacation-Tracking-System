@@ -9,7 +9,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "manager")
-public class Manager implements HelpfulInterface {
+public class Manager extends AbstractUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
