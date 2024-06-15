@@ -12,10 +12,6 @@ public class LoginBody {
     @NotNull
     @NotBlank
     private String password;
-    
-    @NotNull
-    @NotBlank
-    private String userRole;
 
     public String getUsername() {
         return username;
@@ -33,11 +29,4 @@ public class LoginBody {
         this.password = password;
     }
 
-    public String getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(String userRole) {
-        this.userRole = userRole;
-    }
 }

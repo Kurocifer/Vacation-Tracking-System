@@ -54,10 +54,11 @@ public class UserService {
     }
 
     public String loginUser(LoginBody loginBody) throws InvalidUserRoleException {
-        return switch (loginBody.getUserRole().toUpperCase()) {
-            case "EMPLOYEE" -> loginEmployee(loginBody);
-            case "MANAGER" -> loginManager(loginBody);
-            case "CLERK" -> loginClerk(loginBody);
+        // The first three letters of a user's username is an identifier for their role
+        return switch (loginBody.getUsername().substring(0, 3).toUpperCase()) {
+            case "EMP" -> loginEmployee(loginBody);
+            case "MAN" -> loginManager(loginBody);
+            case "CLE" -> loginClerk(loginBody);
             default -> throw new InvalidUserRoleException();
         };
     }
@@ -142,7 +143,6 @@ public class UserService {
     }
 
     private String loginEmployee(LoginBody loginBody) {
-        System.out.println(loginBody.getUserRole());
         Optional<Employee> opEmployee = employeeDAO.findByUsernameIgnoreCase(loginBody.getUsername());
 
         if(opEmployee.isPresent()) {
@@ -156,8 +156,6 @@ public class UserService {
     }
 
     private String loginManager(LoginBody loginBody) {
-        System.out.println(loginBody.getUserRole());
-
         Optional<Manager> opManger = managerDAO.findByUsernameIgnoreCase(loginBody.getUsername());
 
         if(opManger.isPresent()) {
@@ -171,8 +169,6 @@ public class UserService {
     }
 
     private String loginClerk(LoginBody loginBody) {
-        System.out.println(loginBody.getUserRole());
-
         Optional<HRClerk> opClerk = clerkDAO.findByUsernameIgnoreCase(loginBody.getUsername());
 
         if(opClerk.isPresent()) {

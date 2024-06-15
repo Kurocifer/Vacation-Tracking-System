@@ -55,7 +55,7 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 String username = jwtService.getUsername(token); // get the user's name from the jwt token
 
                 // get the user's details based on their username
-                // The first three letters of the user's name is an identifier for their role
+                // The first three letters of the user's username is an identifier for their role
                 System.out.println("jwt request filter" + username +" "+ username.substring(0, 3));
                 AbstractUser user = switch (username.substring(0, 3)) {
                     case "EMP" -> getEmployeeDetails(username);
