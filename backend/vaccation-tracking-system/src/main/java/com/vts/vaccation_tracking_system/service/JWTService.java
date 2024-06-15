@@ -28,10 +28,17 @@ public class JWTService {
     }
 
     public String generateJWT(AbstractUser user) {
+        System.out.println("generate JWT, username: " + user.getUsername());
         return JWT.create()
                 .withClaim(USERNAME_KEY, user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + (1000L * expiryInSeconds)))
                 .withIssuer(issuer)
                 .sign(algorithm);
+    }
+
+    public String getUsername(String token) {
+        String username = JWT.decode(token).getClaim(USERNAME_KEY).asString();
+        System.out.println("getUsername from jwt service: " + username);
+        return username;
     }
 }

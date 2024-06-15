@@ -1,5 +1,6 @@
 package com.vts.vaccation_tracking_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -8,6 +9,7 @@ public class HRClerk extends AbstractUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -22,6 +24,7 @@ public class HRClerk extends AbstractUser {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 1024)
     private String password;
 

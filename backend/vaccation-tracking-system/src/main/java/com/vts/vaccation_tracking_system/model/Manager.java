@@ -1,5 +1,6 @@
 package com.vts.vaccation_tracking_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import java.util.Set;
 @Entity
 @Table(name = "manager")
 public class Manager extends AbstractUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
+    @JsonIgnore
     private Long id;
 
     @Column(name = "username", nullable = false, unique = true)
@@ -24,22 +27,27 @@ public class Manager extends AbstractUser {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, unique = true, length = 1024)
     private String password;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "location_id")
     private Location location;
 
     @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<Grant> grants = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "manager", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Request> requests = new ArrayList<>();
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(name = "manager_employees",
             joinColumns = @JoinColumn(name = "manager_id"),
@@ -135,10 +143,6 @@ public class Manager extends AbstractUser {
                 ", lastName='" + lastName + '\'' +
                 ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
-                ", location=" + location +
-                ", grants=" + grants +
-                ", requests=" + requests +
-                ", employees=" + employees +
                 '}';
     }
 }

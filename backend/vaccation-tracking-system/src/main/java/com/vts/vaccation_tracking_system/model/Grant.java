@@ -1,5 +1,6 @@
 package com.vts.vaccation_tracking_system.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -40,6 +41,7 @@ public class Grant {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    @JsonIgnore
     @ManyToOne(optional = false)
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;

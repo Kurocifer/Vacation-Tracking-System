@@ -5,10 +5,12 @@ import com.vts.vaccation_tracking_system.api.model.LoginResponse;
 import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
+import com.vts.vaccation_tracking_system.model.AbstractUser;
 import com.vts.vaccation_tracking_system.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -48,5 +50,10 @@ public class AuthenticationController {
         LoginResponse loginResponse = new LoginResponse();
         loginResponse.setJwt(jwt);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @GetMapping("/me")
+    public AbstractUser getUserProfile(@AuthenticationPrincipal AbstractUser user) {
+        return user;
     }
 }
