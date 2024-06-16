@@ -3,6 +3,9 @@ package com.vts.vaccation_tracking_system.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "hr_clerk")
 public class HRClerk extends AbstractUser {
@@ -27,6 +30,30 @@ public class HRClerk extends AbstractUser {
     @JsonIgnore
     @Column(name = "password", nullable = false, length = 1024)
     private String password;
+
+    @Column(name = "email_verified", nullable = false)
+    @JsonIgnore
+    private Boolean emailVerified = false;
+    @OneToMany(mappedBy = "clerk", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id desc")
+    @JsonIgnore
+    private List<ClerkVerificationToken> clerkVerificationTokens = new ArrayList<>();
+
+    public List<ClerkVerificationToken> getVerificationTokens() {
+        return clerkVerificationTokens;
+    }
+
+
+    public Boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    public void setVerificationTokens(List<ClerkVerificationToken> clerkVerificationTokens) {
+        this.clerkVerificationTokens = clerkVerificationTokens;
+    }
 
     public String getPassword() {
         return password;
@@ -79,7 +106,6 @@ public class HRClerk extends AbstractUser {
     @Override
     public String toString() {
         return "HRClerk{" +
-                "id=" + id +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

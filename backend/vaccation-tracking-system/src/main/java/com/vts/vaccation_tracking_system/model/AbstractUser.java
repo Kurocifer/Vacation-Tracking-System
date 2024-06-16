@@ -3,6 +3,7 @@ package com.vts.vaccation_tracking_system.model;
 // haven't yet found a suitable name for this interface
 public abstract class AbstractUser {
     public abstract void setEmail(String email);
+    public abstract String getEmail();
 
     public abstract String getPassword();
 

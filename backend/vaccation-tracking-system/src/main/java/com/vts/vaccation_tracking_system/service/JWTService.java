@@ -21,6 +21,7 @@ public class JWTService {
     private int expiryInSeconds;
     private Algorithm algorithm;
     private static final String USERNAME_KEY = "USERNAME";
+    private static final String VERIFICATION_EMAIL_KEY = "VERIFICATION_EMAIL";
 
     @PostConstruct
     public void postConstruct() throws UnsupportedEncodingException {
@@ -37,8 +38,18 @@ public class JWTService {
     }
 
     public String getUsername(String token) {
-        String username = JWT.decode(token).getClaim(USERNAME_KEY).asString();
-        System.out.println("getUsername from jwt service: " + username);
-        return username;
+        return JWT.decode(token).getClaim(USERNAME_KEY).asString();
+    }
+
+    public String getVerificationUsername(String token) {
+        return JWT.decode(token).getClaim(VERIFICATION_EMAIL_KEY).asString();
+    }
+
+    public String generateVerificationJWT(AbstractUser user) {
+        return JWT.create()
+                .withClaim(VERIFICATION_EMAIL_KEY, user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + (1000L * expiryInSeconds)))
+                .withIssuer(issuer)
+                .sign(algorithm);
     }
 }

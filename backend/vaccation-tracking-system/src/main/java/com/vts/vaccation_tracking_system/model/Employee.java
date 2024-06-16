@@ -3,6 +3,7 @@ package com.vts.vaccation_tracking_system.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.proxy.HibernateProxy;
+import org.springframework.core.annotation.Order;
 
 import java.util.*;
 
@@ -47,6 +48,31 @@ public class Employee extends AbstractUser {
     @ManyToMany(mappedBy = "employees")
     @JsonIgnore
     private Set<Manager> managers = new LinkedHashSet<>();
+
+    @Column(name = "email_verified", nullable = false)
+    @JsonIgnore
+    private Boolean emailVerified = false;
+
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("id desc")
+    @JsonIgnore
+    private List<EmployeeVerificationToken> employeeVerificationTokens = new ArrayList<>();
+
+    public List<EmployeeVerificationToken> getVerificationTokens() {
+        return employeeVerificationTokens;
+    }
+
+
+    public Boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    public void setVerificationTokens(List<EmployeeVerificationToken> employeeVerificationTokens) {
+        this.employeeVerificationTokens = employeeVerificationTokens;
+    }
 
     public Set<Manager> getManagers() {
         return managers;
@@ -147,7 +173,6 @@ public class Employee extends AbstractUser {
     @Override
     public String toString() {
         return "Employee{" +
-                "id=" + id +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +

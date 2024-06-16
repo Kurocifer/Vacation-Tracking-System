@@ -54,6 +54,30 @@ public class Manager extends AbstractUser {
             inverseJoinColumns = @JoinColumn(name = "employees_id"))
     private Set<Employee> employees = new LinkedHashSet<>();
 
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("Id desc")
+    @JsonIgnore
+    private List<ManagerVerificationToken> managerVerificationTokens = new ArrayList<>();
+
+    @Column(name = "email_verified", nullable = false)
+    @JsonIgnore
+    private Boolean emailVerified = false;
+
+    public List<ManagerVerificationToken> getVerificationTokens() {
+        return managerVerificationTokens;
+    }
+
+    public Boolean isEmailVerified() {
+        return emailVerified;
+    }
+
+    public void setEmailVerified(Boolean emailVerified) {
+        this.emailVerified = emailVerified;
+    }
+    public void setVerificationTokens(List<ManagerVerificationToken> managerVerificationTokens) {
+        this.managerVerificationTokens = managerVerificationTokens;
+    }
+
     public Set<Employee> getEmployees() {
         return employees;
     }
