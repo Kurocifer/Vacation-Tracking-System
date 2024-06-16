@@ -8,9 +8,7 @@ import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.exception.UserNotVerifiedException;
 import com.vts.vaccation_tracking_system.model.AbstractUser;
-import com.vts.vaccation_tracking_system.model.Employee;
-import com.vts.vaccation_tracking_system.model.HRClerk;
-import com.vts.vaccation_tracking_system.model.Manager;
+import com.vts.vaccation_tracking_system.model.dto.UserDTO;
 import com.vts.vaccation_tracking_system.service.userService.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -65,8 +63,11 @@ public class AuthenticationController {
         }
 
         if(jwt == null) {
-            System.out.println("NUll jwt");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            LoginResponse response = new LoginResponse();
+            response.setSuccess(false);
+            response.setJwt(jwt);
+            response.setFailureReason("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
         else {
             LoginResponse response = new LoginResponse();
@@ -77,8 +78,14 @@ public class AuthenticationController {
     }
 
     @GetMapping("/me")
-    public AbstractUser getUserProfile(@AuthenticationPrincipal AbstractUser user) {
-        return user;
+    public UserDTO getUserProfile(@AuthenticationPrincipal AbstractUser user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail(user.getEmail());
+        userDTO.setUsername(user.getUsername());
+        userDTO.setFirstName(user.getFirstName());
+        userDTO.setLastName(user.getLastName());
+
+        return userDTO;
     }
 
     @PostMapping("/verify")
