@@ -1,4 +1,4 @@
-package com.vts.vaccation_tracking_system.api.model;
+package com.vts.vaccation_tracking_system.api.model.auth;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

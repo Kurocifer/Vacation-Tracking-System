@@ -1,7 +1,7 @@
 package com.vts.vaccation_tracking_system.service.userService;
 
-import com.vts.vaccation_tracking_system.api.model.LoginBody;
-import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
+import com.vts.vaccation_tracking_system.api.model.auth.LoginBody;
+import com.vts.vaccation_tracking_system.api.model.auth.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.exception.UserNotVerifiedException;

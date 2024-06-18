@@ -3,7 +3,6 @@ package com.vts.vaccation_tracking_system.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.hibernate.proxy.HibernateProxy;
-import org.springframework.core.annotation.Order;
 
 import java.util.*;
 

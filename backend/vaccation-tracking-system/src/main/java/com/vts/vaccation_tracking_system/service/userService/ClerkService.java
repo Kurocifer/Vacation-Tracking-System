@@ -1,14 +1,12 @@
 package com.vts.vaccation_tracking_system.service.userService;
 
-import com.vts.vaccation_tracking_system.api.model.LoginBody;
-import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
+import com.vts.vaccation_tracking_system.api.model.auth.LoginBody;
+import com.vts.vaccation_tracking_system.api.model.auth.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.exception.UserNotVerifiedException;
 import com.vts.vaccation_tracking_system.model.ClerkVerificationToken;
 import com.vts.vaccation_tracking_system.model.HRClerk;
-import com.vts.vaccation_tracking_system.model.Manager;
-import com.vts.vaccation_tracking_system.model.ManagerVerificationToken;
 import com.vts.vaccation_tracking_system.model.dao.ClerkDAO;
 import com.vts.vaccation_tracking_system.model.dao.ClerkVerificationTokenDAO;
 import com.vts.vaccation_tracking_system.service.EmailService;

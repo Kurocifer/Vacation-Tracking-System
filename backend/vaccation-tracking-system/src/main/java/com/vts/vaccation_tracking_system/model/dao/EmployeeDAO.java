@@ -10,4 +10,6 @@ public interface EmployeeDAO extends JpaRepository<Employee, Long> {
     Optional<Employee> findByUsernameIgnoreCase(String username);
 
     Optional<Employee> findByEmailIgnoreCase(String email);
+
+
 }

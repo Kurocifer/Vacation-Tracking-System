@@ -1,8 +1,8 @@
 package com.vts.vaccation_tracking_system.api.controller.auth;
 
-import com.vts.vaccation_tracking_system.api.model.LoginBody;
-import com.vts.vaccation_tracking_system.api.model.LoginResponse;
-import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
+import com.vts.vaccation_tracking_system.api.model.auth.LoginBody;
+import com.vts.vaccation_tracking_system.api.model.auth.LoginResponse;
+import com.vts.vaccation_tracking_system.api.model.auth.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
 import com.vts.vaccation_tracking_system.exception.InvalidUserRoleException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;

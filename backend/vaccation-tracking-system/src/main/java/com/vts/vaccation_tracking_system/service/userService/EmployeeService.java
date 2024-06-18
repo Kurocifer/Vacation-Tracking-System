@@ -1,14 +1,12 @@
 package com.vts.vaccation_tracking_system.service.userService;
 
-import com.vts.vaccation_tracking_system.api.model.LoginBody;
-import com.vts.vaccation_tracking_system.api.model.RegistrationBody;
+import com.vts.vaccation_tracking_system.api.model.auth.LoginBody;
+import com.vts.vaccation_tracking_system.api.model.auth.RegistrationBody;
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.exception.UserNotVerifiedException;
 import com.vts.vaccation_tracking_system.model.Employee;
 import com.vts.vaccation_tracking_system.model.EmployeeVerificationToken;
-import com.vts.vaccation_tracking_system.model.Manager;
-import com.vts.vaccation_tracking_system.model.ManagerVerificationToken;
 import com.vts.vaccation_tracking_system.model.dao.EmployeeDAO;
 import com.vts.vaccation_tracking_system.model.dao.EmployeeVerificationTokenDAO;
 import com.vts.vaccation_tracking_system.service.EmailService;
@@ -116,5 +114,11 @@ public class EmployeeService {
             }
         }
         return false;
+    }
+
+    public Employee findEmployee(String username) {
+        Optional<Employee> optionalEmployee = employeeDAO.findByUsernameIgnoreCase(username);
+
+        return optionalEmployee.orElse(null);
     }
 }
