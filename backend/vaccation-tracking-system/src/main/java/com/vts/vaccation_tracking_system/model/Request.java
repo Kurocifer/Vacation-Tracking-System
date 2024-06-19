@@ -38,6 +38,17 @@ public class Request {
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
 
+    @Column(name = "is_validated", nullable = false)
+    private Boolean isValidated = false;
+
+    public Boolean getIsValidated() {
+        return isValidated;
+    }
+
+    public void setIsValidated(Boolean isValidated) {
+        this.isValidated = isValidated;
+    }
+
     public Manager getManager() {
         return manager;
     }

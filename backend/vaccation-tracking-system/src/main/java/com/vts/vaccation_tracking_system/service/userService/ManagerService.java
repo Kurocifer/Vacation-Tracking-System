@@ -2,21 +2,29 @@ package com.vts.vaccation_tracking_system.service.userService;
 
 import com.vts.vaccation_tracking_system.api.model.auth.LoginBody;
 import com.vts.vaccation_tracking_system.api.model.auth.RegistrationBody;
+import com.vts.vaccation_tracking_system.api.model.request.ValidateVacationRequestBody;
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
+import com.vts.vaccation_tracking_system.exception.InvalidVacationRequestException;
 import com.vts.vaccation_tracking_system.exception.UserAlreadyExistsException;
 import com.vts.vaccation_tracking_system.exception.UserNotVerifiedException;
 import com.vts.vaccation_tracking_system.model.Manager;
 import com.vts.vaccation_tracking_system.model.ManagerVerificationToken;
+import com.vts.vaccation_tracking_system.model.Request;
+import com.vts.vaccation_tracking_system.model.bussinessLogicModel.*;
 import com.vts.vaccation_tracking_system.model.dao.ManagerDAO;
 import com.vts.vaccation_tracking_system.model.dao.ManagerVerificationTokenDAO;
+import com.vts.vaccation_tracking_system.model.dao.RequestDAO;
 import com.vts.vaccation_tracking_system.service.EmailService;
 import com.vts.vaccation_tracking_system.service.EncryptionService;
 import com.vts.vaccation_tracking_system.service.JWTService;
+import com.vts.vaccation_tracking_system.service.vacationRequestService.VacationValidationResponse;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ManagerService {
@@ -26,13 +34,27 @@ public class ManagerService {
     private EncryptionService encryptionService;
     private EmailService emailService;
     private ManagerVerificationTokenDAO managerVerificationTokenDAO;
+    private final RequestDAO requestDAO;
+    private final PeriodLimitedRestriction periodLimitedRestriction;
+    private final DayOfWeekRestriction dayOfWeekRestriction;
+    private final DateExclusionRestriction dateExclusionRestriction;
+    private final CoworkerRestriction coworkerRestriction;
+    private final ConsecutiveDayRestriction consecutiveDayRestriction;
+    private final AdjacentDayRestriction adjacentDayRestriction;
 
-    public ManagerService(ManagerDAO managerDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, ManagerVerificationTokenDAO managerVerificationTokenDAO) {
+    public ManagerService(ManagerDAO managerDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, ManagerVerificationTokenDAO managerVerificationTokenDAO, RequestDAO requestDAO, PeriodLimitedRestriction periodLimitedRestriction, DayOfWeekRestriction dayOfWeekRestriction, DateExclusionRestriction dateExclusionRestriction, CoworkerRestriction coworkerRestriction, ConsecutiveDayRestriction consecutiveDayRestriction, AdjacentDayRestriction adjacentDayRestriction) {
         this.managerDAO = managerDAO;
         this.jwtService = jwtService;
         this.encryptionService = encryptionService;
         this.emailService = emailService;
         this.managerVerificationTokenDAO = managerVerificationTokenDAO;
+        this.requestDAO = requestDAO;
+        this.periodLimitedRestriction = periodLimitedRestriction;
+        this.dayOfWeekRestriction = dayOfWeekRestriction;
+        this.dateExclusionRestriction = dateExclusionRestriction;
+        this.coworkerRestriction = coworkerRestriction;
+        this.consecutiveDayRestriction = consecutiveDayRestriction;
+        this.adjacentDayRestriction = adjacentDayRestriction;
     }
 
 
@@ -114,5 +136,43 @@ public class ManagerService {
             }
         }
         return false;
+    }
+
+    public List<VacationValidationResponse> validateVacationRequest(ValidateVacationRequestBody validateVacationRequestBody) throws InvalidVacationRequestException {
+        Optional<Request> optionalRequest = requestDAO.findById(validateVacationRequestBody.getRequestId());
+
+        if (optionalRequest.isPresent()) {
+            Request request = optionalRequest.get();
+
+            // check if the request is associated with this employee
+            if (requestDAO.existsByManager_UsernameIgnoreCase(validateVacationRequestBody.getUsername())) {
+                List<VacationValidationResponse> validationResponses = new ArrayList<>();
+                List<ValidationResult> validationResults = new ArrayList<>();
+
+                // I don't know to what extent, but I'm sure this is terrible
+                validationResults.add(adjacentDayRestriction.validate(request));
+                validationResults.add(periodLimitedRestriction.validate(request));
+                validationResults.add(dateExclusionRestriction.validate(request));
+                validationResults.add(dayOfWeekRestriction.validate(request));
+                validationResults.add(coworkerRestriction.validate(request));
+                validationResults.add(consecutiveDayRestriction.validate(request));
+
+                validationResponses = validationResults.stream()
+                        .map(ValidationResult::getVacationValidationResponse)
+                        .collect(Collectors.toList());
+
+                boolean requestAbidesToAllRestrictions = validationResults.stream()
+                        .allMatch(ValidationResult::validated);
+
+                if(requestAbidesToAllRestrictions) {
+                    request.setIsValidated(true);
+                }
+
+                return validationResponses;
+            } else {
+                throw new InvalidVacationRequestException();
+            }
+        }
+        return null;
     }
 }

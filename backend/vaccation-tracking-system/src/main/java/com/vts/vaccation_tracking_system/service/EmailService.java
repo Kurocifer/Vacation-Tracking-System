@@ -1,9 +1,11 @@
 package com.vts.vaccation_tracking_system.service;
 
 import com.vts.vaccation_tracking_system.exception.EmailFailureException;
+import com.vts.vaccation_tracking_system.exception.EmployeeDoesNotExistException;
 import com.vts.vaccation_tracking_system.model.Employee;
 import com.vts.vaccation_tracking_system.model.Manager;
 import com.vts.vaccation_tracking_system.model.VerificationToken;
+import com.vts.vaccation_tracking_system.model.dao.EmployeeDAO;
 import com.vts.vaccation_tracking_system.service.userService.EmployeeService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -11,6 +13,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
@@ -23,12 +26,12 @@ public class EmailService {
     private String url;
 
     private final JavaMailSender javaMailSender;
-    private final EmployeeService employeeService;
+    private final EmployeeDAO employeeDAO;
 
 
-    public EmailService(EmployeeService employeeService, JavaMailSender javaMailSender) {
-        this.employeeService = employeeService;
+    public EmailService( JavaMailSender javaMailSender, EmployeeDAO employeeDAO) {
         this.javaMailSender = javaMailSender;
+        this.employeeDAO = employeeDAO;
     }
 
     private SimpleMailMessage makeMailMessage() {
@@ -55,9 +58,10 @@ public class EmailService {
         }
     }
 
-    public void sendVacationRequestNotificationEmailToManager(Employee employee) {
-        if(employeeService.findEmployee(employee.getUsername()) != null) {
-            SimpleMailMessage message = makeMailMessage();
+    public void sendVacationRequestNotificationEmailToManager(Employee employee) throws EmployeeDoesNotExistException {
+        Optional<Employee> optionalEmployee = employeeDAO.findByUsernameIgnoreCase(employee.getUsername());
+
+        if(optionalEmployee.isPresent()) {
             final String SUBJECT = "Validate an employee's vacation request";
 
             Stream<String> managerEmails = employee.getManagers().stream()
@@ -65,13 +69,15 @@ public class EmailService {
 
             managerEmails.forEach(email -> {
                 try {
-                    sendEmail(email, createManagerNotificationEmailBody(employee));
+                    sendEmail(email, SUBJECT, createManagerNotificationEmailBody(employee));
                 } catch (EmailFailureException e) {
                     System.out.println("failed to send email");
                     throw new RuntimeException(e);
                 }
             });
 
+        } else {
+            throw new EmployeeDoesNotExistException();
         }
     }
 
@@ -84,11 +90,11 @@ public class EmailService {
                 "Follow this link to validate this request" + url;
     }
 
-    private void sendEmail(String recipientEmail, String body) throws EmailFailureException {
+    private void sendEmail(String recipientEmail, String subject, String body) throws EmailFailureException {
         SimpleMailMessage message = makeMailMessage();
 
         message.setTo(recipientEmail);
-        message.setSubject("Validate an employee's vacation request");
+        message.setSubject(subject);
         message.setTo(body);
 
         try {
