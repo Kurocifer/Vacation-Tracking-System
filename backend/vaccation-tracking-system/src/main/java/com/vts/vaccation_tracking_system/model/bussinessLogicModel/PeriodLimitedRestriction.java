@@ -21,7 +21,7 @@ public class PeriodLimitedRestriction extends Restriction {
 
         validationResult.setValidated(false);
         validationResult.vacationValidationResponse.setRestrictionDescription("false");
-        validationResult.vacationValidationResponse.setRestrictionDescription("Adjacent day restriction");
+        validationResult.vacationValidationResponse.setRestrictionDescription("Period limited restriction");
         validationResult.setErrorMessages(errorMessages);
 
         return validationResult;

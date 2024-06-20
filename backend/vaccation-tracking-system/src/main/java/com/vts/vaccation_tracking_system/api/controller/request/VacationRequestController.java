@@ -48,7 +48,7 @@ public class VacationRequestController {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
     
-    @PostMapping
+    @PostMapping("/validate")
     public ResponseEntity<List<VacationValidationResponse>> validateVacationRequest(
             ValidateVacationRequestBody validateVacationRequestBody, @AuthenticationPrincipal Manager manager) {
         
@@ -57,6 +57,18 @@ public class VacationRequestController {
             vacationRequestService.validateVacationRequest(validateVacationRequestBody, manager);
             return ResponseEntity.ok(vacationValidationResponses);
         } catch (InvalidUserRoleException | InvalidVacationRequestException | UnauthorisedOperationException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping("/reject")
+    public ResponseEntity rejectVacationRequest(
+            @RequestBody ValidateVacationRequestBody validateVacationRequestBody, @AuthenticationPrincipal Manager manager) {
+
+        try {
+            vacationRequestService.rejectVacationRequest(validateVacationRequestBody, manager);
+            return ResponseEntity.ok().build();
+        } catch (UnauthorisedOperationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }

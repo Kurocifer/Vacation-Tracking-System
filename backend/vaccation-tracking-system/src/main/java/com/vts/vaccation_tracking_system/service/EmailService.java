@@ -90,7 +90,7 @@ public class EmailService {
                 "Follow this link to validate this request" + url;
     }
 
-    private void sendEmail(String recipientEmail, String subject, String body) throws EmailFailureException {
+    public void sendEmail(String recipientEmail, String subject, String body) throws EmailFailureException {
         SimpleMailMessage message = makeMailMessage();
 
         message.setTo(recipientEmail);
@@ -101,7 +101,6 @@ public class EmailService {
             javaMailSender.send(message);
         } catch(MailException e) {
             System.out.println("Failed to send message");
-            throw new EmailFailureException();
         }
     }
 

@@ -22,7 +22,7 @@ public class ConsecutiveDayRestriction extends Restriction {
 
         validationResult.setValidated(false);
         validationResult.vacationValidationResponse.setRestrictionDescription("false");
-        validationResult.vacationValidationResponse.setRestrictionDescription("Adjacent day restriction");
+        validationResult.vacationValidationResponse.setRestrictionDescription("Consecutive day restriction");
         validationResult.setErrorMessages(errorMessages);
 
         return validationResult;

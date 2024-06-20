@@ -143,7 +143,7 @@ public class EmployeeService {
         return optionalEmployee.orElse(null);
     }
 
-    public List<VacationValidationResponse> validateVacationRequest(ValidateVacationRequestBody validateVacationRequestBody) throws InvalidVacationRequestException {
+    public List<ValidationResult> validateVacationRequest(ValidateVacationRequestBody validateVacationRequestBody) throws InvalidVacationRequestException {
         Optional<Request> optionalRequest = requestDAO.findById(validateVacationRequestBody.getRequestId());
 
         if (optionalRequest.isPresent()) {
@@ -162,18 +162,19 @@ public class EmployeeService {
                 validationResults.add(coworkerRestriction.validate(request));
                 validationResults.add(consecutiveDayRestriction.validate(request));
 
-                validationResponses = validationResults.stream()
-                        .map(ValidationResult::getVacationValidationResponse)
-                        .collect(Collectors.toList());
-
                 boolean requestAbidesToAllRestrictions = validationResults.stream()
                         .allMatch(ValidationResult::validated);
 
                 if(requestAbidesToAllRestrictions) {
-                    request.setIsValidated(true);
+                    requestDAO.updateIsValidatedById(true, request.getId());
+                    try {
+                        emailService.sendEmail(request.getEmployee().getEmail(), "Vacation Request Response",
+                                "Your vacation request has been validated. Enjoy it");
+                    } catch (EmailFailureException ignored) {
+                    }
                 }
 
-                return validationResponses;
+                return validationResults;
             } else {
                 throw new InvalidVacationRequestException();
             }

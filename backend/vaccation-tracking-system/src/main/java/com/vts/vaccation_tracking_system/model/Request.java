@@ -65,7 +65,6 @@ public class Request {
         this.employee = employee;
     }
 
-
     public Grant getGrant() {
         return grant;
     }

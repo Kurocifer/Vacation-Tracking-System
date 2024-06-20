@@ -20,7 +20,7 @@ public class DateExclusionRestriction extends Restriction {
 
         validationResult.setValidated(false);
         validationResult.vacationValidationResponse.setRestrictionDescription("false");
-        validationResult.vacationValidationResponse.setRestrictionDescription("Adjacent day restriction");
+        validationResult.vacationValidationResponse.setRestrictionDescription("Date exclusion restriction");
         validationResult.setErrorMessages(errorMessages);
 
         return validationResult;

@@ -21,7 +21,7 @@ public class DayOfWeekRestriction extends Restriction {
 
         validationResult.setValidated(false);
         validationResult.vacationValidationResponse.setRestrictionDescription("false");
-        validationResult.vacationValidationResponse.setRestrictionDescription("Adjacent day restriction");
+        validationResult.vacationValidationResponse.setRestrictionDescription("Day of the week restriction");
         validationResult.setErrorMessages(errorMessages);
 
         return validationResult;
