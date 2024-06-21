@@ -3,9 +3,12 @@ package com.vts.vaccation_tracking_system.model.bussinessLogicModel;
 
 import com.vts.vaccation_tracking_system.model.Request;
 import com.vts.vaccation_tracking_system.model.Restriction;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class PeriodLimitedRestriction extends Restriction {
 
     private List<String> errorMessages;

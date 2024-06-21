@@ -35,26 +35,14 @@ public class ManagerService {
     private EmailService emailService;
     private ManagerVerificationTokenDAO managerVerificationTokenDAO;
     private final RequestDAO requestDAO;
-    private final PeriodLimitedRestriction periodLimitedRestriction;
-    private final DayOfWeekRestriction dayOfWeekRestriction;
-    private final DateExclusionRestriction dateExclusionRestriction;
-    private final CoworkerRestriction coworkerRestriction;
-    private final ConsecutiveDayRestriction consecutiveDayRestriction;
-    private final AdjacentDayRestriction adjacentDayRestriction;
 
-    public ManagerService(ManagerDAO managerDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, ManagerVerificationTokenDAO managerVerificationTokenDAO, RequestDAO requestDAO, PeriodLimitedRestriction periodLimitedRestriction, DayOfWeekRestriction dayOfWeekRestriction, DateExclusionRestriction dateExclusionRestriction, CoworkerRestriction coworkerRestriction, ConsecutiveDayRestriction consecutiveDayRestriction, AdjacentDayRestriction adjacentDayRestriction) {
+    public ManagerService(ManagerDAO managerDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, ManagerVerificationTokenDAO managerVerificationTokenDAO, RequestDAO requestDAO) {
         this.managerDAO = managerDAO;
         this.jwtService = jwtService;
         this.encryptionService = encryptionService;
         this.emailService = emailService;
         this.managerVerificationTokenDAO = managerVerificationTokenDAO;
         this.requestDAO = requestDAO;
-        this.periodLimitedRestriction = periodLimitedRestriction;
-        this.dayOfWeekRestriction = dayOfWeekRestriction;
-        this.dateExclusionRestriction = dateExclusionRestriction;
-        this.coworkerRestriction = coworkerRestriction;
-        this.consecutiveDayRestriction = consecutiveDayRestriction;
-        this.adjacentDayRestriction = adjacentDayRestriction;
     }
 
 
@@ -136,43 +124,5 @@ public class ManagerService {
             }
         }
         return false;
-    }
-
-    public List<ValidationResult> validateVacationRequest(ValidateVacationRequestBody validateVacationRequestBody) throws InvalidVacationRequestException {
-        Optional<Request> optionalRequest = requestDAO.findById(validateVacationRequestBody.getRequestId());
-
-        if (optionalRequest.isPresent()) {
-            Request request = optionalRequest.get();
-
-            // check if the request is associated with this employee
-            if (requestDAO.existsByManager_UsernameIgnoreCase(validateVacationRequestBody.getUsername())) {
-                List<ValidationResult> validationResults = new ArrayList<>();
-
-                // I don't know to what extent, but I'm sure this is terrible
-                validationResults.add(adjacentDayRestriction.validate(request));
-                validationResults.add(periodLimitedRestriction.validate(request));
-                validationResults.add(dateExclusionRestriction.validate(request));
-                validationResults.add(dayOfWeekRestriction.validate(request));
-                validationResults.add(coworkerRestriction.validate(request));
-                validationResults.add(consecutiveDayRestriction.validate(request));
-
-                boolean requestAbidesToAllRestrictions = validationResults.stream()
-                        .allMatch(ValidationResult::validated);
-
-                if(requestAbidesToAllRestrictions) {
-                    requestDAO.updateIsValidatedById(true, request.getId());
-                    try {
-                        emailService.sendEmail(request.getEmployee().getEmail(), "Vacation Request Response",
-                                "Your vacation request has been validated. Enjoy it");
-                    } catch (EmailFailureException ignored) {
-                    }
-                }
-
-                return validationResults;
-            } else {
-                throw new InvalidVacationRequestException();
-            }
-        }
-        return null;
     }
 }

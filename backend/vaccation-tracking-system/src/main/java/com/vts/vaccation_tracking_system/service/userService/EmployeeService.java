@@ -33,27 +33,15 @@ public class EmployeeService {
     private EmailService emailService;
     private EmployeeVerificationTokenDAO employeeVerificationTokenDAO;
     private final RequestDAO requestDAO;
-    private final PeriodLimitedRestriction periodLimitedRestriction;
-    private final DayOfWeekRestriction dayOfWeekRestriction;
-    private final DateExclusionRestriction dateExclusionRestriction;
-    private final CoworkerRestriction coworkerRestriction;
-    private final ConsecutiveDayRestriction consecutiveDayRestriction;
-    private final AdjacentDayRestriction adjacentDayRestriction;
 
 
-    public EmployeeService(EmployeeDAO employeeDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, EmployeeVerificationTokenDAO employeeVerificationTokenDAO, RequestDAO requestDAO, PeriodLimitedRestriction periodLimitedRestriction, DayOfWeekRestriction dayOfWeekRestriction, DateExclusionRestriction dateExclusionRestriction, CoworkerRestriction coworkerRestriction, ConsecutiveDayRestriction consecutiveDayRestriction, AdjacentDayRestriction adjacentDayRestriction) {
+    public EmployeeService(EmployeeDAO employeeDAO, JWTService jwtService, EncryptionService encryptionService, EmailService emailService, EmployeeVerificationTokenDAO employeeVerificationTokenDAO, RequestDAO requestDAO) {
         this.employeeDAO = employeeDAO;
         this.jwtService = jwtService;
         this.encryptionService = encryptionService;
         this.emailService = emailService;
         this.employeeVerificationTokenDAO = employeeVerificationTokenDAO;
         this.requestDAO = requestDAO;
-        this.periodLimitedRestriction = periodLimitedRestriction;
-        this.dayOfWeekRestriction = dayOfWeekRestriction;
-        this.dateExclusionRestriction = dateExclusionRestriction;
-        this.coworkerRestriction = coworkerRestriction;
-        this.consecutiveDayRestriction = consecutiveDayRestriction;
-        this.adjacentDayRestriction = adjacentDayRestriction;
     }
 
     public void register(RegistrationBody registrationBody, String username) throws UserAlreadyExistsException, EmailFailureException {
@@ -141,44 +129,5 @@ public class EmployeeService {
         Optional<Employee> optionalEmployee = employeeDAO.findByUsernameIgnoreCase(username);
 
         return optionalEmployee.orElse(null);
-    }
-
-    public List<ValidationResult> validateVacationRequest(ValidateVacationRequestBody validateVacationRequestBody) throws InvalidVacationRequestException {
-        Optional<Request> optionalRequest = requestDAO.findById(validateVacationRequestBody.getRequestId());
-
-        if (optionalRequest.isPresent()) {
-            Request request = optionalRequest.get();
-
-            // check if the request is associated with this employee
-            if (requestDAO.existsByEmployee_UsernameIgnoreCase(validateVacationRequestBody.getUsername())) {
-                List<VacationValidationResponse> validationResponses = new ArrayList<>();
-                List<ValidationResult> validationResults = new ArrayList<>();
-
-                // I don't know to what extent, but I'm sure this is terrible
-                validationResults.add(adjacentDayRestriction.validate(request));
-                validationResults.add(periodLimitedRestriction.validate(request));
-                validationResults.add(dateExclusionRestriction.validate(request));
-                validationResults.add(dayOfWeekRestriction.validate(request));
-                validationResults.add(coworkerRestriction.validate(request));
-                validationResults.add(consecutiveDayRestriction.validate(request));
-
-                boolean requestAbidesToAllRestrictions = validationResults.stream()
-                        .allMatch(ValidationResult::validated);
-
-                if(requestAbidesToAllRestrictions) {
-                    requestDAO.updateIsValidatedById(true, request.getId());
-                    try {
-                        emailService.sendEmail(request.getEmployee().getEmail(), "Vacation Request Response",
-                                "Your vacation request has been validated. Enjoy it");
-                    } catch (EmailFailureException ignored) {
-                    }
-                }
-
-                return validationResults;
-            } else {
-                throw new InvalidVacationRequestException();
-            }
-        }
-        return null;
     }
 }

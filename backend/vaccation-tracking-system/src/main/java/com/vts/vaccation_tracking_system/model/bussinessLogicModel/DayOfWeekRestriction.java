@@ -4,9 +4,12 @@ package com.vts.vaccation_tracking_system.model.bussinessLogicModel;
 
 import com.vts.vaccation_tracking_system.model.Request;
 import com.vts.vaccation_tracking_system.model.Restriction;
+import org.hibernate.validator.constraints.CodePointLength;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class DayOfWeekRestriction extends Restriction {
     private List<String> errorMessages;
 
